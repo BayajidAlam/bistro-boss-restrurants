@@ -4,12 +4,26 @@ import { AuthContext } from "../../providers/AuthProvider";
 import Swal from "sweetalert2";
 
 const FoodCard = ({ item }) => {
-  const { name, image, price, recipe } = item;
+  const { name, image, price, recipe, _id } = item;
   const { user } = useContext(AuthContext);
 
   const handleAddToCart = (item) => {
-    if (user) {
-      fetch("http://localhost:5000/carts")
+    const cartData = {
+      Item_Id: _id,
+      name,
+      image,
+      price,
+      user_Email: user.email,
+      user_Name: user.displayName,
+    };
+    if (user && user.email) {
+      fetch("http://localhost:5000/carts", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(cartData),
+      })
         .then((response) => response.json())
         .then((data) => {
           if (data.insertedId) {
