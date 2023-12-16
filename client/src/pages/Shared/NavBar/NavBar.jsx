@@ -12,7 +12,7 @@ const NavBar = () => {
         console.log(error);
       });
   };
-  
+
   const navOptions = (
     <>
       {" "}

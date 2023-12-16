@@ -1,11 +1,15 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
 const SignUp = () => {
+  
   const { createUser } = useContext(AuthContext);
+  let navigate = useNavigate();
+  let location = useLocation();
+  let from = location.state?.from?.pathname || "/";
 
   // hook form
   const {
@@ -21,6 +25,7 @@ const SignUp = () => {
       .then((result) => {
         if (result.user) {
           reset();
+          navigate(from, { replace: true });
         }
       })
       .catch((errors) => {
