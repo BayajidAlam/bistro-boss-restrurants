@@ -2,12 +2,15 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import Swal from "sweetalert2";
+import useCart from "../../hooks/useCart";
 
 const FoodCard = ({ item }) => {
   const { name, image, price, recipe, _id } = item;
   const { user } = useContext(AuthContext);
+  const [cart, isLoading, refetch] = useCart();
 
-  const handleAddToCart = (item) => {
+
+  const handleAddToCart = () => {
     const cartData = {
       Item_Id: _id,
       name,
@@ -27,6 +30,7 @@ const FoodCard = ({ item }) => {
         .then((response) => response.json())
         .then((data) => {
           if (data.insertedId) {
+            refetch();
             Swal.fire({
               position: "top-end",
               icon: "success",
@@ -55,7 +59,7 @@ const FoodCard = ({ item }) => {
         <div className="card-actions justify-end">
           <Link to={`/order/${item._id}`}>
             <button
-              onClick={() => handleAddToCart(item)}
+              onClick={() => handleAddToCart()}
               className="btn btn-primary"
             >
               Add To Card
