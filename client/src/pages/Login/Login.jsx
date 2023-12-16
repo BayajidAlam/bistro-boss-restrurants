@@ -114,7 +114,6 @@ const Login = () => {
                   name="captcha"
                   placeholder="type the text above"
                   className="input input-bordered"
-                  required
                 />
 
                 <div className="flex gap-10 items-center">
@@ -135,7 +134,7 @@ const Login = () => {
               </div>
               <div className="form-control mt-6">
                 <button
-                  disabled={disable}
+                  // disabled={disable}
                   type="submit"
                   className="btn btn-primary"
                 >

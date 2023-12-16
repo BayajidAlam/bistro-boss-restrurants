@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
@@ -5,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 
 const SignUp = () => {
-  
-  const { createUser } = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
   let navigate = useNavigate();
   let location = useLocation();
   let from = location.state?.from?.pathname || "/";
@@ -21,9 +21,13 @@ const SignUp = () => {
 
   // signup user
   const onSubmit = (data) => {
+    console.log(data, "data");
     createUser(data.email, data.password)
       .then((result) => {
         if (result.user) {
+          updateUserProfile(data.name, data.photoURL)
+            .then((result) => {})
+            .catch((error) => {});
           reset();
           navigate(from, { replace: true });
         }
@@ -48,6 +52,7 @@ const SignUp = () => {
               et a id nisi.
             </p>
           </div>
+
           <div className="card  w-1/2 max-w-sm shadow-2xl bg-base-100">
             <form onSubmit={handleSubmit(onSubmit)} className="card-body">
               <div className="form-control">
@@ -61,6 +66,7 @@ const SignUp = () => {
                   className="input input-bordered"
                 />
               </div>
+
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -75,6 +81,7 @@ const SignUp = () => {
                   <span className="text-red-400">This field is required</span>
                 )}
               </div>
+
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Password</span>
@@ -109,17 +116,33 @@ const SignUp = () => {
                     Password should be strong!
                   </span>
                 )}
-                <div>
-                  <label className="label">
-                    <Link
-                      className="label-text-alt link link-hover"
-                      to={"/login"}
-                    >
-                      Already have a account?
-                    </Link>
-                  </label>
-                </div>
               </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">PhotoURL</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("photoURL", { required: true })}
+                  placeholder="photoURL"
+                  className="input input-bordered"
+                />
+                {errors.photoURL && (
+                  <span className="text-red-400">photoURL is required</span>
+                )}
+              </div>
+              <div>
+                <label className="label">
+                  <Link
+                    className="label-text-alt link link-hover"
+                    to={"/login"}
+                  >
+                    Already have a account?
+                  </Link>
+                </label>
+              </div>
+
               <div className="form-control mt-6">
                 <button type="submit" className="btn btn-primary">
                   Signup
