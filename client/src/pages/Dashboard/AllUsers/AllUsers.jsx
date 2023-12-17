@@ -6,7 +6,6 @@ import { FaUserShield } from "react-icons/fa";
 
 const AllUsers = () => {
   const [users, isLoading, refetch] = useUsers();
-  console.log(users, "users");
 
   // update a user on db
   const handleUpdateUser = (id) => {
@@ -15,7 +14,16 @@ const AllUsers = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-       
+        if (data.modifiedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Made Admin Successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       });
   };
 
