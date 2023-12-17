@@ -31,9 +31,9 @@ async function run() {
     const reviewsCollection = db.collection("reviews");
     const cartCollection = db.collection("carts");
 
-    //---------------------apis----------------------------//
+    //--------------------- apis----------------------------//
+    //********************* users apis ************************//
     //insert a user to db
-    // insert a cart to db
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = user.user_Email;
@@ -71,19 +71,28 @@ async function run() {
       const result = await usersCollection.deleteOne(query);
       res.send(result);
     });
+    //********************* users apis ************************//
 
+    
+    //********************* menu apis ************************//
     // get all menu
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
     });
+    //********************* menu apis ************************//
 
+
+    //********************* reviews apis ************************//
     // get all reviews
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
       res.send(result);
     });
+    //********************* reviews apis ************************//
 
+
+    //********************* cart apis ************************//
     // insert a cart to db
     app.post("/carts", async (req, res) => {
       const item = req.body;
@@ -109,17 +118,17 @@ async function run() {
       const result = await cartCollection.deleteOne(query);
       res.send(result);
     });
+    //********************* cart apis ************************//
 
     //confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    console.log("Db connected successfully!");
   } finally {
   }
 }
 run().catch(console.dir);
 
+//base api
 app.get("/", (req, res) => {
   res.send("App is listening...!");
 });
