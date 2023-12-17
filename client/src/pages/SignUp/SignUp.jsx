@@ -19,17 +19,34 @@ const SignUp = () => {
     reset,
   } = useForm();
 
-  // signup user
+  // sign-up user
   const onSubmit = (data) => {
     console.log(data, "data");
     createUser(data.email, data.password)
       .then((result) => {
         if (result.user) {
+          // update username and photoURL
           updateUserProfile(data.name, data.photoURL)
-            .then((result) => {})
+            .then((result) => {
+              const userInfo = {
+                user_name: data?.name,
+                user_email: data?.email,
+              };
+
+              fetch("http://localhost:5000/users", {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify(userInfo),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  reset();
+                  navigate(from, { replace: true });
+                });
+            })
             .catch((error) => {});
-          reset();
-          navigate(from, { replace: true });
         }
       })
       .catch((errors) => {
