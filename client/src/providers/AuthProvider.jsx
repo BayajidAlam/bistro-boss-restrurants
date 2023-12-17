@@ -6,16 +6,24 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  signInWithPopup,
 } from "firebase/auth";
 import { app } from "../firebase/firebase.config";
+import { GoogleAuthProvider } from "firebase/auth";
 
+// creating auth
 export const AuthContext = createContext(null);
 const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
+  // providers
+  const googleProvider = new GoogleAuthProvider();
+
+  // states
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // functions
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
@@ -39,6 +47,12 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const signInWithGoogle = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  // observer
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -58,6 +72,7 @@ const AuthProvider = ({ children }) => {
     logInUser,
     logOutUser,
     updateUserProfile,
+    signInWithGoogle,
   };
 
   return (

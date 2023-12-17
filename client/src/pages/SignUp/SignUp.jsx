@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
+import SocialLogIn from "../../components/SocialLogIn/SocialLogIn";
 
 const SignUp = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
@@ -42,8 +43,10 @@ const SignUp = () => {
               })
                 .then((res) => res.json())
                 .then((data) => {
-                  reset();
-                  navigate(from, { replace: true });
+                  if (data.insertedId) {
+                    reset();
+                    navigate(from, { replace: true });
+                  }
                 });
             })
             .catch((error) => {});
@@ -165,6 +168,7 @@ const SignUp = () => {
                   Signup
                 </button>
               </div>
+              <SocialLogIn />
             </form>
           </div>
         </div>
