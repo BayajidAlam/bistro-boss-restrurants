@@ -4,8 +4,14 @@ import { FaWallet } from "react-icons/fa6";
 import { FaCalendar } from "react-icons/fa";
 import { IoIosHome } from "react-icons/io";
 import { IoMdMenu } from "react-icons/io";
+import { IoAddCircle } from "react-icons/io5";
+import { HiTemplate } from "react-icons/hi";
+import { TbBrandBooking } from "react-icons/tb";
+import { FaUsers } from "react-icons/fa";
 
 const Dashboard = () => {
+  const isAdmin = true;
+
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
@@ -25,27 +31,55 @@ const Dashboard = () => {
           className="drawer-overlay"
         ></label>
         <ul className="menu p-4 w-80 min-h-full  text-base-content bg-[#D1A054]">
-          {/* Sidebar content here */}
-          <li>
-            <NavLink to="/">
-              <IoIosHome /> Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/myCart">
-              <FaCartShopping /> My Cart
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/payment">
-              <FaWallet /> Payment History
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/reservation">
-              <FaCalendar /> Reservation
-            </NavLink>
-          </li>
+          {isAdmin ? (
+            <>
+              {" "}
+              <li>
+                <NavLink to="/">
+                  <IoIosHome />
+                  Admin Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/">
+                  <IoAddCircle /> Add Item
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/">
+                  <HiTemplate /> Manage Item
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/">
+                  <TbBrandBooking /> Manage Bookings
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/allUsers">
+                  <FaUsers /> Manage Users
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/myCart">
+                  <FaCartShopping /> My Cart
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/payment">
+                  <FaWallet /> Payment History
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/reservation">
+                  <FaCalendar /> Reservation
+                </NavLink>
+              </li>
+            </>
+          ) : (
+            <> </>
+          )}
+
           <div className="divider"></div>
           <li>
             <NavLink to="/">
