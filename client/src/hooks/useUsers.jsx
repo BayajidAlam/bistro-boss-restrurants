@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "./useAxiosSecure";
 
 const useUsers = () => {
+  const axiosSecure  = useAxiosSecure();
+
   const {
     isLoading,
     data: users = [],
@@ -11,8 +14,8 @@ const useUsers = () => {
   } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:5000/users`);
-      return res.json();
+      const res = await axiosSecure(`/users`);
+      return res.data;
     },
   });
 

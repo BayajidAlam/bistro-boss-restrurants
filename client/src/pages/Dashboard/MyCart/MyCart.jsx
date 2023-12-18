@@ -28,10 +28,10 @@ const MyCart = () => {
             if (data.deletedCount > 0) {
               console.log(data, "data");
               refetch();
-                Swal.fire({
+              Swal.fire({
                 title: "Deleted!",
                 text: "Your item has been deleted.",
-                icon: "success"
+                icon: "success",
               });
             }
           });
@@ -63,28 +63,39 @@ const MyCart = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map((row, i) => (
-                <tr key={row._id}>
-                  <th>{i + 1}</th>
-                  <td>
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-12 h-12">
-                        <img src={row.image} alt={row.image} />
-                      </div>
-                    </div>
-                  </td>
-                  <td>{row.name}</td>
-                  <td>${row.price}</td>
-                  <th>
-                    <button
-                      onClick={() => handleDelete(row._id)}
-                      className="btn bg-red-600 text-white btn-md text-xl"
-                    >
-                      <MdDelete />
-                    </button>
-                  </th>
-                </tr>
-              ))}
+              {cart.length === 0 ? (
+                <>
+                  <div className="w-full h-20">
+                    <p className="text-slate-500 text-xl font-bold my-3 text-center w-full">No Item added</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  {cart.map((row, i) => (
+                    <tr key={row._id}>
+                      <th>{i + 1}</th>
+                      <td>
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-12 h-12">
+                            <img src={row.image} alt={row.image} />
+                          </div>
+                        </div>
+                      </td>
+                      <td>{row.name}</td>
+                      <td>${row.price}</td>
+                      <th>
+                        <button
+                          onClick={() => handleDelete(row._id)}
+                          className="btn bg-red-600 text-white btn-md text-xl"
+                        >
+                          <MdDelete />
+                        </button>
+                      </th>
+                    </tr>
+                  ))}
+                </>
+              )}
             </tbody>
           </table>
         </div>

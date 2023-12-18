@@ -1,9 +1,11 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
+
 // middlewares
 app.use(cors());
 app.use(express.json());
@@ -20,6 +22,27 @@ const client = new MongoClient(uri, {
   },
 });
 
+//********************* verifyJWT middleware ************************//
+const verifyJWT = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res
+      .status(401)
+      .send({ error: true, message: "unauthorized access" });
+  }
+  const token = authorization.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res
+        .status(401)
+        .send({ error: true, message: "unauthorized access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
+//********************* verifyJWT middleware ************************//
+
 async function run() {
   try {
     await client.connect();
@@ -32,11 +55,51 @@ async function run() {
     const cartCollection = db.collection("carts");
 
     //--------------------- apis----------------------------//
+    //********************* jwt api ************************//
+    // JWT
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "10s",
+      });
+      res.send({ token });
+    });
+    //********************* jwt api ************************//
+
+    //********************* verify admin api ************************//
+    // use verify admin after verifyToken
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { user_email: email };
+      const user = await usersCollection.findOne(query);
+      const isAdmin = user?.role === "admin";
+      if (!isAdmin) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      next();
+    };
+    //********************* verify admin api ************************//
+
+    //********************* admin apis ************************//
+    app.get("/admin/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+
+      if (req.decoded.email !== email) {
+        return res.send({ admin: false });
+      }
+
+      const query = { user_email: email };
+      const user = await usersCollection.findOne(query);
+      const result = { admin: user?.role === "admin" };
+      res.send(result);
+    });
+    //********************* admin apis ************************//
+
     //********************* users apis ************************//
     //insert a user to db
     app.post("/users", async (req, res) => {
       const user = req.body;
-      const query = user.user_Email;
+      const query = { user_email: user.user_email };
       const isUserExist = await usersCollection.findOne(query);
       if (isUserExist) {
         return res.send({ message: "user already exist!" });
@@ -73,7 +136,6 @@ async function run() {
     });
     //********************* users apis ************************//
 
-    
     //********************* menu apis ************************//
     // get all menu
     app.get("/menu", async (req, res) => {
@@ -82,7 +144,6 @@ async function run() {
     });
     //********************* menu apis ************************//
 
-
     //********************* reviews apis ************************//
     // get all reviews
     app.get("/reviews", async (req, res) => {
@@ -90,7 +151,6 @@ async function run() {
       res.send(result);
     });
     //********************* reviews apis ************************//
-
 
     //********************* cart apis ************************//
     // insert a cart to db
@@ -101,11 +161,19 @@ async function run() {
     });
 
     // get all cart item of a user
-    app.get("/carts", async (req, res) => {
+    app.get("/carts", verifyJWT,verifyAdmin, async (req, res) => {
       const email = req.query.email;
       if (!email) {
         res.send([]);
       }
+
+      const decodedEmail = req.decoded.email;
+      if (email !== decodedEmail) {
+        return res
+          .status(403)
+          .send({ error: true, message: "forbidden access" });
+      }
+
       const query = { user_Email: email };
       const result = await cartCollection.find(query).toArray();
       res.send(result);

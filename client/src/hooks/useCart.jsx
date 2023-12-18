@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
-import { AuthContext } from "../providers/AuthProvider";
 import useAxiosSecure from "./useAxiosSecure";
+import useAuth from "./useAuth";
 
 const useCart = () => {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useAuth();
   const token = localStorage.getItem("access-token");
   const axios = useAxiosSecure();
 
@@ -17,6 +16,7 @@ const useCart = () => {
     error,
   } = useQuery({
     queryKey: ["cart", user?.email],
+    enabled: !loading,
     queryFn: async () => {
       const res = await axios(`/carts?email=${user?.email}`);
       return res.data;

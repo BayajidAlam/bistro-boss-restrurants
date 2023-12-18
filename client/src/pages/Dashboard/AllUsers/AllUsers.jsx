@@ -3,10 +3,14 @@ import useUsers from "../../../hooks/useUsers";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
 import { FaUserShield } from "react-icons/fa";
+import useAdmin from "../../../hooks/useAdmin";
 
 const AllUsers = () => {
-  const [users, isLoading, refetch] = useUsers();
 
+  const [users, isLoading, refetch] = useUsers();
+  const [isAdmin] = useAdmin();
+  
+  console.log(isAdmin,'admin');
   // update a user on db
   const handleUpdateUser = (id) => {
     fetch(`http://localhost:5000/users/${id}`, {

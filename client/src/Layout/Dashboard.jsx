@@ -8,9 +8,10 @@ import { IoAddCircle } from "react-icons/io5";
 import { HiTemplate } from "react-icons/hi";
 import { TbBrandBooking } from "react-icons/tb";
 import { FaUsers } from "react-icons/fa";
+import useAdmin from "../hooks/useAdmin";
 
 const Dashboard = () => {
-  const isAdmin = true;
+  const [isAdmin] = useAdmin();
 
   return (
     <div className="drawer lg:drawer-open">
@@ -41,7 +42,7 @@ const Dashboard = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/">
+                <NavLink to="/dashboard/add-item">
                   <IoAddCircle /> Add Item
                 </NavLink>
               </li>
@@ -65,7 +66,7 @@ const Dashboard = () => {
                   <FaCartShopping /> My Cart
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink to="/dashboard/payment">
                   <FaWallet /> Payment History
                 </NavLink>
@@ -74,7 +75,7 @@ const Dashboard = () => {
                 <NavLink to="/dashboard/reservation">
                   <FaCalendar /> Reservation
                 </NavLink>
-              </li>
+              </li> */}
             </>
           ) : (
             <> </>
