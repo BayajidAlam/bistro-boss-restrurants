@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import useCart from "../../../hooks/useCart";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const MyCart = () => {
   const [cart, isLoading, refetch, error] = useCart();
@@ -48,7 +49,10 @@ const MyCart = () => {
         <div className="flex justify-between items-center w-full font-semibold h-10">
           <h1>Total Order: ${cart.length}</h1>
           <h1>Total Price: $ {totalPrice}</h1>
-          <button className="btn btn-warning btn-sm ">Pay</button>
+          <Link to="/dashboard/payment">
+            {" "}
+            <button className="btn btn-warning btn-sm ">Pay</button>
+          </Link>
         </div>
 
         <div className="overflow-x-auto">
@@ -66,7 +70,9 @@ const MyCart = () => {
               {cart.length === 0 ? (
                 <>
                   <div className="w-full h-20">
-                    <p className="text-slate-500 text-xl font-bold my-3 text-center w-full">No Item added</p>
+                    <p className="text-slate-500 text-xl font-bold my-3 text-center w-full">
+                      No Item added
+                    </p>
                   </div>
                 </>
               ) : (

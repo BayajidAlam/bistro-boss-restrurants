@@ -73,7 +73,13 @@ const Dashboard = () => {
               </li> */}
             </>
           ) : (
-            <> </>
+            <>
+              <li>
+                <NavLink to="/dashboard/payment">
+                  <FaCartShopping /> payment
+                </NavLink>
+              </li>
+            </>
           )}
 
           <div className="divider"></div>
