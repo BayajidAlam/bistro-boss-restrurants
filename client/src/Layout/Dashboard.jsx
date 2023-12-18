@@ -47,13 +47,8 @@ const Dashboard = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/">
+                <NavLink to="/dashboard/manage-all-item">
                   <HiTemplate /> Manage Item
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/">
-                  <TbBrandBooking /> Manage Bookings
                 </NavLink>
               </li>
               <li>
