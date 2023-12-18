@@ -1,17 +1,19 @@
 import { Helmet } from "react-helmet-async";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
-import { FaUserShield } from "react-icons/fa";
+
+import { CiEdit } from "react-icons/ci";
 import useAdmin from "../../../hooks/useAdmin";
 import useMenu from "../../../hooks/useMenu";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const ManageItems = () => {
   const [menu, loading, refetch] = useMenu();
   const [isAdmin] = useAdmin();
-  console.log(menu, "menu");
-  console.log(isAdmin, "admin");
+  const axiosSecure = useAxiosSecure();
+
   // update a user on db
-  const handleUpdateUser = (id) => {
+  const handleUpdateMenu = (id) => {
     fetch(`http://localhost:5000/users/${id}`, {
       method: "PATCH",
     })
@@ -42,21 +44,17 @@ const ManageItems = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/users/${id}`, {
-          method: "DELETE",
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.deletedCount > 0) {
-              console.log(data, "data");
-              refetch();
-              Swal.fire({
-                title: "Deleted!",
-                text: "user has been deleted.",
-                icon: "success",
-              });
-            }
-          });
+        axiosSecure.delete(`/menu/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            console.log(res.data, "data");
+            refetch();
+            Swal.fire({
+              title: "Deleted!",
+              text: "Menu has been deleted.",
+              icon: "success",
+            });
+          }
+        });
       }
     });
   };
@@ -94,12 +92,20 @@ const ManageItems = () => {
                 <td>{mn?.category}</td>
                 <td>{mn?.price}</td>
                 <th>
-                  <button
-                    onClick={() => handleDeleteMenu(mn?._id)}
-                    className="btn bg-red-600 text-white btn-md text-xl"
-                  >
-                    <MdDelete />
-                  </button>
+                  <div className="flex gap-4 items-center">
+                    <button
+                      onClick={() => handleUpdateMenu(mn?._id)}
+                      className="btn bg-red-600 text-white btn-md text-xl"
+                    >
+                      <CiEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteMenu(mn?._id)}
+                      className="btn bg-red-600 text-white btn-md text-xl"
+                    >
+                      <MdDelete />
+                    </button>
+                  </div>
                 </th>
               </tr>
             ))}

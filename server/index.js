@@ -149,6 +149,16 @@ async function run() {
       const result = await menuCollection.insertOne(item);
       res.send(result);
     });
+
+    // delete a menu
+    app.delete("/menu/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      console.log(id, "id");
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.deleteOne(query);
+      console.log(result, "result");
+      res.send(result);
+    });
     //********************* menu apis ************************//
 
     //********************* reviews apis ************************//
@@ -173,11 +183,8 @@ async function run() {
       if (!email) {
         res.send([]);
       }
-      console.log(email, "email");
       const decodedEmail = req.decoded.email;
-      console.log(decodedEmail, "decodedEmail");
       if (email !== decodedEmail) {
-        console.log('---------Email Not Matched----------');
         return res
           .status(403)
           .send({ error: true, message: "forbidden access" });
@@ -185,7 +192,7 @@ async function run() {
 
       const query = { user_Email: email };
       const result = await cartCollection.find(query).toArray();
-      console.log('Right');
+      console.log("Right");
       res.send(result);
     });
 
