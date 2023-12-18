@@ -60,7 +60,7 @@ async function run() {
     app.post("/jwt", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "10s",
+        expiresIn: "1hr",
       });
       res.send({ token });
     });
@@ -142,6 +142,13 @@ async function run() {
       const result = await menuCollection.find().toArray();
       res.send(result);
     });
+
+    // insert a menu to db
+    app.post("/menu", verifyJWT, verifyAdmin, async (req, res) => {
+      const item = req.body;
+      const result = await menuCollection.insertOne(item);
+      res.send(result);
+    });
     //********************* menu apis ************************//
 
     //********************* reviews apis ************************//
@@ -161,14 +168,16 @@ async function run() {
     });
 
     // get all cart item of a user
-    app.get("/carts", verifyJWT,verifyAdmin, async (req, res) => {
+    app.get("/carts", verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.query.email;
       if (!email) {
         res.send([]);
       }
-
+      console.log(email, "email");
       const decodedEmail = req.decoded.email;
+      console.log(decodedEmail, "decodedEmail");
       if (email !== decodedEmail) {
+        console.log('---------Email Not Matched----------');
         return res
           .status(403)
           .send({ error: true, message: "forbidden access" });
@@ -176,6 +185,7 @@ async function run() {
 
       const query = { user_Email: email };
       const result = await cartCollection.find(query).toArray();
+      console.log('Right');
       res.send(result);
     });
 

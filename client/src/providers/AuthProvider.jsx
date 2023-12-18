@@ -65,11 +65,14 @@ const AuthProvider = ({ children }) => {
           })
           .then((data) => {
             localStorage.setItem("access-token", data.data.token);
+          })
+          .catch((error) => {
+            console.error("Axios request failed:", error);
           });
       } else {
         localStorage.removeItem("access-token");
       }
-      
+
       setLoading(false);
     });
 
