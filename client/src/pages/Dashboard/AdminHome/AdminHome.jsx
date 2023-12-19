@@ -60,7 +60,7 @@ const AdminHome = () => {
     })
 
     return (
-        <div>
+        <div className='w-full p-4'>
             <h2 className="text-3xl">
                 <span>Hi, Welcome </span>
                 {

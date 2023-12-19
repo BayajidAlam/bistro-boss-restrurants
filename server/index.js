@@ -191,7 +191,7 @@ async function run() {
     });
 
     // get all cart item of a user
-    app.get("/carts", verifyJWT, verifyAdmin, async (req, res) => {
+    app.get("/carts", verifyJWT, async (req, res) => {
       const email = req.query.email;
       if (!email) {
         res.send([]);
@@ -326,7 +326,7 @@ async function run() {
      */
 
     // using aggregate pipeline
-    app.get("/order-stats", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/order-stats", verifyJWT, verifyAdmin, async (req, res) => {
       const result = await paymentsCollection
         .aggregate([
           {
