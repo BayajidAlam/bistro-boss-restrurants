@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Helmet } from "react-helmet-async";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";

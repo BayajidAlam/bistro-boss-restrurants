@@ -12,11 +12,6 @@ if (!process.env.MAIL_GUN_API_KEY) {
   console.error("Error: MAIL_GUN_API_KEY is not defined!");
   process.exit(1); // Exit the process with an error code
 }
-console.log(
-  process.env.MAIL_GUN_API_KEY,
-  "--------------------gun key----------"
-);
-const formData = require("form-data");
 const Mailgun = require("mailgun-js");
 
 const mg = new Mailgun({

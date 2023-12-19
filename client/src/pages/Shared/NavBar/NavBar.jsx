@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { CiShoppingCart } from "react-icons/ci";
 import useCart from "../../../hooks/useCart";
+import useAdmin from "../../../hooks/useAdmin";
 
 const NavBar = () => {
-
   const { user, logOutUser } = useContext(AuthContext);
+  const [isAdmin] = useAdmin();
   const [cart] = useCart();
 
   const handleLogOut = () => {
@@ -30,9 +31,9 @@ const NavBar = () => {
         <Link to="/order/salad">Order</Link>
       </li>
       <li>
-        <Link to="/dashboard/add-item">
-          <button className="btn">
-            <CiShoppingCart />
+        <Link to={`/dashboard/${isAdmin ? "admin-home" : "user-home"}`}>
+          <button>
+            dashboard
             <div className="badge badge-secondary">+{cart?.length || 0}</div>
           </button>
         </Link>
