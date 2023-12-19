@@ -5,13 +5,30 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+// set up mailgun
+if (!process.env.MAIL_GUN_API_KEY) {
+  console.error("Error: MAIL_GUN_API_KEY is not defined!");
+  process.exit(1); // Exit the process with an error code
+}
+console.log(
+  process.env.MAIL_GUN_API_KEY,
+  "--------------------gun key----------"
+);
+const formData = require("form-data");
+const Mailgun = require("mailgun-js");
+
+const mg = new Mailgun({
+  apiKey: process.env.MAIL_GUN_API_KEY,
+  domain: process.env.MAIL_SENDING_DOMAIN,
+});
 
 // middlewares
 app.use(cors());
 app.use(express.json());
 
 // mongodb and apis
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@myclaster-1.wxhqp81.mongodb.net/bistroDB?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -53,6 +70,7 @@ async function run() {
     const menuCollection = db.collection("menu");
     const reviewsCollection = db.collection("reviews");
     const cartCollection = db.collection("carts");
+    const paymentsCollection = db.collection("payments");
 
     //--------------------- apis----------------------------//
     //********************* jwt api ************************//
@@ -204,6 +222,69 @@ async function run() {
       res.send(result);
     });
     //********************* cart apis ************************//
+
+    //********************* payment apis ************************//
+    // payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+      console.log(amount, "amount inside the intent");
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+
+    app.get("/payments/:email", verifyJWT, async (req, res) => {
+      const query = { email: req.params.email };
+      if (req.params.email !== req.decoded.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      const result = await paymentsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      const paymentResult = await paymentsCollection.insertOne(payment);
+
+      //  carefully delete each item from the cart
+      console.log("payment info", payment);
+      const query = {
+        _id: {
+          $in: payment.cartIds.map((id) => new ObjectId(id)),
+        },
+      };
+
+      const deleteResult = await cartCollection.deleteMany(query);
+
+      // send user email about payment confirmation
+      mg.messages()
+        .send({
+          from: "Mailgun Sandbox <postmaster@sandbox89feb24256414e78b2903ecdc8276001.mailgun.org>",
+          to: ["bayajidalam2001@gmail.com"],
+          subject: "Hello",
+          text: "Testing some Mailgun awesomeness!",
+          html: `
+          <div>
+            <h2>Thank you for your order</h2>
+            <h4>Your Transaction Id: <strong>${payment.transactionId}</strong></h4>
+            <p>We would like to get your feedback about the food</p>
+          </div>
+        `,
+        })
+        .then((msg) => console.log(msg)) // logs response data
+        .catch((err) => console.log(err)); // logs any error
+
+      res.send({ paymentResult, deleteResult });
+    });
+    //********************* payment apis ************************//
 
     //confirm a successful connection
     await client.db("admin").command({ ping: 1 });
